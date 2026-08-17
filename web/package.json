@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "mock-api": "node scripts/mock-api.mjs",
-    "build": "tsc -b && vite build",
+    "build": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && vite build",
     "test": "vitest run",
     "test:watch": "vitest"
   },

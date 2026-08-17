@@ -7,6 +7,9 @@
 **/obj/
 node_modules/
 web/dist/
+*.tsbuildinfo
+web/vite.config.js
+web/vite.config.d.ts
 .env
 *.user
 *.suo
