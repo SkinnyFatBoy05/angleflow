@@ -2,9 +2,12 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using AngleFlow.Domain.Applications;
+using AngleFlow.Infrastructure.Persistence;
 using AngleFlow.Infrastructure.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using DomainApplicationId = AngleFlow.Domain.Applications.ApplicationId;
@@ -138,14 +141,30 @@ public sealed class ApplicationApiTests : IClassFixture<AngleFlowApiFactory>
 
 public sealed class AngleFlowApiFactory : WebApplicationFactory<Program>
 {
+    private readonly SqliteConnection _connection = new("Data Source=:memory:");
+
+    public AngleFlowApiFactory() => _connection.Open();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
         builder.ConfigureServices(services =>
         {
+            services.RemoveAll<DbContextOptions<AngleFlowDbContext>>();
+            services.RemoveAll<AngleFlowDbContext>();
+            services.AddDbContext<AngleFlowDbContext>(options => options.UseSqlite(_connection));
             services.RemoveAll<IApplicationService>();
             services.AddSingleton<IApplicationService, ApiTestApplicationService>();
         });
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        if (disposing)
+        {
+            _connection.Dispose();
+        }
     }
 }
 

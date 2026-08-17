@@ -44,6 +44,12 @@ app.MapGet("/health/live", () => Results.Ok(new { status = "Healthy" }));
 app.MapGet("/health/ready", () => Results.Ok(new { status = "Ready" }));
 app.MapApplicationEndpoints();
 
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AngleFlowDbContext>();
+    await db.Database.EnsureCreatedAsync();
+}
+
 app.Run();
 
 public partial class Program;

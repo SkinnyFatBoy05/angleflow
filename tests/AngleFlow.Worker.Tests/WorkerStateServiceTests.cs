@@ -51,6 +51,16 @@ public sealed class WorkerStateServiceTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Complete_is_idempotent_when_the_terminal_status_is_already_recorded()
+    {
+        await _service.CompleteAsync(Id, "WITHDRAWN", "APPLICANT_REQUEST", CancellationToken.None);
+        await _service.CompleteAsync(Id, "WITHDRAWN", "APPLICANT_REQUEST", CancellationToken.None);
+
+        Assert.Equal(ApplicationStatus.Withdrawn, (await _db.Applications.SingleAsync()).Status);
+        Assert.Equal(2, await _db.AuditEvents.CountAsync());
+    }
+
+    [Fact]
     public async Task Record_check_is_idempotent_by_external_operation_key()
     {
         await _service.RecordCheckAsync(Id, "credit", "{\"creditBand\":\"GOOD\"}", "check-op-001", CancellationToken.None);

@@ -67,6 +67,11 @@ public sealed class WorkerStateService(AngleFlowDbContext db, TimeProvider timeP
             "WITHDRAWN" => ApplicationStatus.Withdrawn,
             _ => throw new ArgumentException("Unsupported completion outcome.", nameof(outcome))
         };
+        if (record.Status == status)
+        {
+            return;
+        }
+
         var eventType = status switch
         {
             ApplicationStatus.Approved => "APPLICATION_APPROVED",

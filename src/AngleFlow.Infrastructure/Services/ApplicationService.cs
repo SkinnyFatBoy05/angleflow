@@ -158,7 +158,9 @@ public sealed class ApplicationService(
 
     public async Task<ApplicationView> WithdrawAsync(DomainApplicationId id, CancellationToken cancellationToken)
     {
-        var record = await db.Applications.SingleOrDefaultAsync(item => item.Id == id.Value, cancellationToken)
+        var record = await db.Applications
+            .Include(item => item.AuditEvents)
+            .SingleOrDefaultAsync(item => item.Id == id.Value, cancellationToken)
             ?? throw new ApplicationNotFoundException(id);
         if (record.Status is ApplicationStatus.Approved or ApplicationStatus.Declined or ApplicationStatus.Withdrawn)
         {
@@ -166,9 +168,32 @@ public sealed class ApplicationService(
         }
 
         await workflow.CorrelateWithdrawalAsync(id, cancellationToken);
+        await db.Entry(record).ReloadAsync(cancellationToken);
+        db.Entry(record).Collection(item => item.AuditEvents).IsLoaded = false;
+        await db.Entry(record).Collection(item => item.AuditEvents).LoadAsync(cancellationToken);
+        if (record.Status == ApplicationStatus.Withdrawn)
+        {
+            return ToView(record);
+        }
+
         Transition(record, ApplicationStatus.Withdrawn, "APPLICATION_WITHDRAWN", "APPLICANT_REQUEST", timeProvider.GetUtcNow());
-        await db.SaveChangesAsync(cancellationToken);
-        return ToView(record);
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+            return ToView(record);
+        }
+        catch (DbUpdateException)
+        {
+            db.ChangeTracker.Clear();
+            var completedByWorker = await db.Applications.AsNoTracking()
+                .SingleOrDefaultAsync(item => item.Id == id.Value, cancellationToken);
+            if (completedByWorker?.Status == ApplicationStatus.Withdrawn)
+            {
+                return ToView(completedByWorker);
+            }
+
+            throw;
+        }
     }
 
     private async Task<ApplicationView> GetRequiredAsync(DomainApplicationId id, CancellationToken cancellationToken) =>
@@ -202,7 +227,10 @@ public sealed class ApplicationService(
         record.Status = status;
         record.UpdatedAt = occurredAt;
         record.Version++;
-        record.AuditEvents.Add(NewAudit(record, record.AuditEvents.Count + 1, eventType, reasonCode, occurredAt));
+        var nextSequence = record.AuditEvents.Count == 0
+            ? 1
+            : record.AuditEvents.Max(item => item.Sequence) + 1;
+        record.AuditEvents.Add(NewAudit(record, nextSequence, eventType, reasonCode, occurredAt));
     }
 
     private static AuditRecord NewAudit(

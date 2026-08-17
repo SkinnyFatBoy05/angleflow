@@ -21,12 +21,21 @@ public sealed class CamundaWorkerHost(
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var processDirectory = Path.Combine(AppContext.BaseDirectory, "process");
+        var resourcePaths = WorkerDefinitions.ResourceFiles
+            .Select(file => Path.Combine(processDirectory, file))
+            .ToArray();
+        var deployment = await client.DeployResourcesFromFilesAsync(
+            resourcePaths,
+            ct: stoppingToken);
+        logger.LogInformation("Deployed AngleFlow workflow resources as {DeploymentKey}", deployment.DeploymentKey);
+
         RegisterCheckWorkers();
         RegisterOutcomeWorkers();
         logger.LogInformation("Registered {WorkerCount} Camunda job workers", WorkerDefinitions.JobTypes.Count);
-        return client.RunWorkersAsync(ct: stoppingToken);
+        await client.RunWorkersAsync(ct: stoppingToken);
     }
 
     private void RegisterCheckWorkers()

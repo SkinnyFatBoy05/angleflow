@@ -58,6 +58,14 @@ public sealed class WorkerHandlerTests
     }
 
     [Fact]
+    public void Definitions_include_every_deployable_workflow_resource()
+    {
+        Assert.Equal(
+            ["asset-finance-application.bpmn", "application-risk.dmn", "manual-review.form"],
+            WorkerDefinitions.ResourceFiles);
+    }
+
+    [Fact]
     public void Worker_input_deserializes_the_string_id_published_to_camunda()
     {
         var input = JsonSerializer.Deserialize<WorkerApplicationInput>("""

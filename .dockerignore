@@ -1,0 +1,16 @@
+**/bin
+**/obj
+.dotnet
+.dotnet-home
+.packages
+.git
+.github
+.vs
+.vscode
+web/node_modules
+web/dist
+TestResults
+coverage
+tmp
+docs
+tests

@@ -105,6 +105,19 @@ public sealed class ApplicationServiceTests : IAsyncLifetime
         Assert.Equal("APPLICATION_WITHDRAWN", (await _service.GetTimelineAsync(withdrawn.Id, CancellationToken.None))[^1].EventType);
     }
 
+    [Fact]
+    public async Task Withdraw_after_context_reload_preserves_audit_sequence()
+    {
+        var created = await _service.CreateAsync(Valid, "withdraw-reload-001", CancellationToken.None);
+        _db.ChangeTracker.Clear();
+
+        var withdrawn = await _service.WithdrawAsync(created.Application.Id, CancellationToken.None);
+        var timeline = await _service.GetTimelineAsync(withdrawn.Id, CancellationToken.None);
+
+        Assert.Equal(ApplicationStatus.Withdrawn, withdrawn.Status);
+        Assert.Equal(new long[] { 1, 2, 3 }, timeline.Select(item => item.Sequence));
+    }
+
     private sealed class SingleStartWorkflowGateway : IWorkflowGateway
     {
         private int _starts;
