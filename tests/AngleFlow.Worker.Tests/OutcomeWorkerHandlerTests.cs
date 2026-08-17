@@ -68,6 +68,16 @@ public sealed class OutcomeWorkerHandlerTests : IAsyncLifetime
         Assert.Equal("WITHDRAWN", OutcomeWorkerHandlers.ResolveOutcome("withdrawn", null, null));
     }
 
+    [Fact]
+    public void Withdrawal_reason_overrides_the_existing_dmn_reason()
+    {
+        Assert.Equal(
+            "APPLICANT_REQUEST",
+            OutcomeWorkerHandlers.ResolveReasonCode("WITHDRAWN", "POLICY_REVIEW"));
+        Assert.Equal("LOW_RISK", OutcomeWorkerHandlers.ResolveReasonCode("AUTO_APPROVE", "LOW_RISK"));
+        Assert.Equal("MANUAL_DECISION", OutcomeWorkerHandlers.ResolveReasonCode("APPROVE", null));
+    }
+
     private static ApplicationRecord NewApplication() => new()
     {
         Id = RecordId,

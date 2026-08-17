@@ -62,6 +62,11 @@ public sealed class OutcomeWorkerHandlers(
             : riskOutcome.Trim().ToUpperInvariant();
     }
 
+    public static string ResolveReasonCode(string outcome, string? riskReasonCode) =>
+        string.Equals(outcome, "WITHDRAWN", StringComparison.OrdinalIgnoreCase)
+            ? "APPLICANT_REQUEST"
+            : riskReasonCode ?? "MANUAL_DECISION";
+
     private static DomainApplicationId ParseId(string value) => new(Guid.Parse(value));
 
     private static RiskOutcome ParseRiskOutcome(string value) => value.Trim().ToUpperInvariant() switch

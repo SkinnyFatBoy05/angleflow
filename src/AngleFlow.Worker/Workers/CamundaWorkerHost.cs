@@ -103,8 +103,9 @@ public sealed class CamundaWorkerHost(
                     headers?.Outcome,
                     input.RiskDecision?.Outcome,
                     input.ManualDecision);
-                var reason = input.RiskDecision?.ReasonCode
-                    ?? (outcome == "WITHDRAWN" ? "APPLICANT_REQUEST" : "MANUAL_DECISION");
+                var reason = OutcomeWorkerHandlers.ResolveReasonCode(
+                    outcome,
+                    input.RiskDecision?.ReasonCode);
                 await services.GetRequiredService<OutcomeWorkerHandlers>()
                     .CompleteAsync(new(input.ApplicationId), outcome, reason, ct);
                 return true;
