@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8EAFFB68-2C9F-4070-B85C-26218B3060F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngleFlow.Domain", "src\AngleFlow.Domain\AngleFlow.Domain.csproj", "{C8A57A20-9FB9-4784-86F0-01DF4317A9CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{77B97672-358E-4F67-BC9B-45B67667B434}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngleFlow.Domain.Tests", "tests\AngleFlow.Domain.Tests\AngleFlow.Domain.Tests.csproj", "{9943D653-5702-4922-AFC1-3736A53C1FEA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C8A57A20-9FB9-4784-86F0-01DF4317A9CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8A57A20-9FB9-4784-86F0-01DF4317A9CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8A57A20-9FB9-4784-86F0-01DF4317A9CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8A57A20-9FB9-4784-86F0-01DF4317A9CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9943D653-5702-4922-AFC1-3736A53C1FEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9943D653-5702-4922-AFC1-3736A53C1FEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9943D653-5702-4922-AFC1-3736A53C1FEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9943D653-5702-4922-AFC1-3736A53C1FEA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C8A57A20-9FB9-4784-86F0-01DF4317A9CD} = {8EAFFB68-2C9F-4070-B85C-26218B3060F6}
+		{9943D653-5702-4922-AFC1-3736A53C1FEA} = {77B97672-358E-4F67-BC9B-45B67667B434}
+	EndGlobalSection
+EndGlobal
