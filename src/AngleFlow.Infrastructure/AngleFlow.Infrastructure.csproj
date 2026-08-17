@@ -6,6 +6,7 @@
     <ProjectReference Include="..\AngleFlow.Domain\AngleFlow.Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Camunda.Orchestration.Sdk" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>

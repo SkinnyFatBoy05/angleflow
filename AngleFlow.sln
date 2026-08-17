@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngleFlow.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngleFlow.Infrastructure.Tests", "tests\AngleFlow.Infrastructure.Tests\AngleFlow.Infrastructure.Tests.csproj", "{FC4227A8-A817-470A-914B-98309A6CAFC9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngleFlow.Workflow.Tests", "tests\AngleFlow.Workflow.Tests\AngleFlow.Workflow.Tests.csproj", "{8159091A-BE6F-42E0-86B6-11A445B8EE53}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,11 +42,16 @@ Global
 		{FC4227A8-A817-470A-914B-98309A6CAFC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC4227A8-A817-470A-914B-98309A6CAFC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC4227A8-A817-470A-914B-98309A6CAFC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8159091A-BE6F-42E0-86B6-11A445B8EE53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8159091A-BE6F-42E0-86B6-11A445B8EE53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8159091A-BE6F-42E0-86B6-11A445B8EE53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8159091A-BE6F-42E0-86B6-11A445B8EE53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C8A57A20-9FB9-4784-86F0-01DF4317A9CD} = {8EAFFB68-2C9F-4070-B85C-26218B3060F6}
 		{9943D653-5702-4922-AFC1-3736A53C1FEA} = {77B97672-358E-4F67-BC9B-45B67667B434}
 		{897E1739-8E3E-4496-B840-B632969A1118} = {8EAFFB68-2C9F-4070-B85C-26218B3060F6}
 		{FC4227A8-A817-470A-914B-98309A6CAFC9} = {77B97672-358E-4F67-BC9B-45B67667B434}
+		{8159091A-BE6F-42E0-86B6-11A445B8EE53} = {77B97672-358E-4F67-BC9B-45B67667B434}
 	EndGlobalSection
 EndGlobal

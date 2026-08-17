@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns:zeebe="http://camunda.org/schema/zeebe/1.0"
+                  id="Definitions_AngleFlow"
+                  targetNamespace="https://github.com/skinnyfatboy/angleflow">
+  <bpmn:message id="Message_Withdrawal" name="application-withdrawn">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=applicationId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+
+  <bpmn:process id="asset-finance-application" name="Asset Finance Application" isExecutable="true">
+    <bpmn:startEvent id="Start_Application" name="Application submitted" />
+
+    <bpmn:serviceTask id="Task_Validate" name="Validate application">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="validate-application" retries="3" />
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <bpmn:parallelGateway id="Gateway_ChecksSplit" name="Run checks" />
+
+    <bpmn:serviceTask id="Task_Identity" name="Identity check">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="identity-check" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=applicationId" target="applicationId" />
+          <zeebe:input source="=scenario" target="scenario" />
+          <zeebe:output source="=identityVerified" target="identityVerified" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_Credit" name="Credit check">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="credit-check" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=applicationId" target="applicationId" />
+          <zeebe:input source="=scenario" target="scenario" />
+          <zeebe:output source="=creditBand" target="creditBand" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_Affordability" name="Affordability check">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="affordability-check" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=applicationId" target="applicationId" />
+          <zeebe:input source="=scenario" target="scenario" />
+          <zeebe:output source="=affordabilityRatio" target="affordabilityRatio" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_Fraud" name="Fraud check">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="fraud-check" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=applicationId" target="applicationId" />
+          <zeebe:input source="=scenario" target="scenario" />
+          <zeebe:output source="=fraudScore" target="fraudScore" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_Asset" name="Asset valuation check">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="asset-check" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=applicationId" target="applicationId" />
+          <zeebe:input source="=scenario" target="scenario" />
+          <zeebe:output source="=assetConfidence" target="assetConfidence" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <bpmn:parallelGateway id="Gateway_ChecksJoin" name="Checks completed" />
+
+    <bpmn:businessRuleTask id="Task_RiskDecision" name="Evaluate underwriting rules">
+      <bpmn:extensionElements>
+        <zeebe:calledDecision decisionId="application-risk" resultVariable="riskDecision" bindingType="deployment" />
+      </bpmn:extensionElements>
+    </bpmn:businessRuleTask>
+
+    <bpmn:serviceTask id="Task_PersistDecision" name="Persist decision">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="persist-decision" retries="3" />
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <bpmn:exclusiveGateway id="Gateway_RiskOutcome" name="Risk outcome" default="Flow_Risk_Review" />
+
+    <bpmn:serviceTask id="Task_CreateOffer" name="Create finance offer">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="create-offer" retries="3" />
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <bpmn:userTask id="Task_ManualReview" name="Manual assessment">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:formDefinition formId="manual-review" />
+      </bpmn:extensionElements>
+    </bpmn:userTask>
+
+    <bpmn:boundaryEvent id="Boundary_ReviewSla" name="Review SLA" attachedToRef="Task_ManualReview" cancelActivity="false">
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT2M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+
+    <bpmn:serviceTask id="Task_EscalateReview" name="Escalate overdue review">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="escalate-review" retries="3" />
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Escalation" name="Escalation recorded" />
+
+    <bpmn:exclusiveGateway id="Gateway_ManualOutcome" name="Manual decision" default="Flow_Manual_Decline" />
+
+    <bpmn:serviceTask id="Task_NotifyApproved" name="Notify approval">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="send-notification" retries="3" />
+        <zeebe:taskHeaders>
+          <zeebe:header key="template" value="approved" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="Task_NotifyDeclined" name="Notify decline">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="send-notification" retries="3" />
+        <zeebe:taskHeaders>
+          <zeebe:header key="template" value="declined" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+
+    <bpmn:exclusiveGateway id="Gateway_CompletionMerge" name="Outcome completed" />
+
+    <bpmn:serviceTask id="Task_Complete" name="Complete application">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="complete-application" retries="3" />
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Application" name="Application completed" />
+
+    <bpmn:subProcess id="EventSubProcess_Withdrawal" name="Application withdrawal" triggeredByEvent="true">
+      <bpmn:startEvent id="Start_Withdrawal" name="Withdrawal requested" isInterrupting="true">
+        <bpmn:messageEventDefinition messageRef="Message_Withdrawal" />
+      </bpmn:startEvent>
+      <bpmn:serviceTask id="Task_CompleteWithdrawal" name="Complete withdrawal">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="complete-application" retries="3" />
+          <zeebe:taskHeaders>
+            <zeebe:header key="outcome" value="withdrawn" />
+          </zeebe:taskHeaders>
+        </bpmn:extensionElements>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="End_Withdrawal" name="Application withdrawn" />
+      <bpmn:sequenceFlow id="Flow_Withdrawal_Complete" sourceRef="Start_Withdrawal" targetRef="Task_CompleteWithdrawal" />
+      <bpmn:sequenceFlow id="Flow_Withdrawal_End" sourceRef="Task_CompleteWithdrawal" targetRef="End_Withdrawal" />
+    </bpmn:subProcess>
+
+    <bpmn:sequenceFlow id="Flow_Start_Validate" sourceRef="Start_Application" targetRef="Task_Validate" />
+    <bpmn:sequenceFlow id="Flow_Validate_Split" sourceRef="Task_Validate" targetRef="Gateway_ChecksSplit" />
+    <bpmn:sequenceFlow id="Flow_Split_Identity" sourceRef="Gateway_ChecksSplit" targetRef="Task_Identity" />
+    <bpmn:sequenceFlow id="Flow_Split_Credit" sourceRef="Gateway_ChecksSplit" targetRef="Task_Credit" />
+    <bpmn:sequenceFlow id="Flow_Split_Affordability" sourceRef="Gateway_ChecksSplit" targetRef="Task_Affordability" />
+    <bpmn:sequenceFlow id="Flow_Split_Fraud" sourceRef="Gateway_ChecksSplit" targetRef="Task_Fraud" />
+    <bpmn:sequenceFlow id="Flow_Split_Asset" sourceRef="Gateway_ChecksSplit" targetRef="Task_Asset" />
+    <bpmn:sequenceFlow id="Flow_Identity_Join" sourceRef="Task_Identity" targetRef="Gateway_ChecksJoin" />
+    <bpmn:sequenceFlow id="Flow_Credit_Join" sourceRef="Task_Credit" targetRef="Gateway_ChecksJoin" />
+    <bpmn:sequenceFlow id="Flow_Affordability_Join" sourceRef="Task_Affordability" targetRef="Gateway_ChecksJoin" />
+    <bpmn:sequenceFlow id="Flow_Fraud_Join" sourceRef="Task_Fraud" targetRef="Gateway_ChecksJoin" />
+    <bpmn:sequenceFlow id="Flow_Asset_Join" sourceRef="Task_Asset" targetRef="Gateway_ChecksJoin" />
+    <bpmn:sequenceFlow id="Flow_Join_Risk" sourceRef="Gateway_ChecksJoin" targetRef="Task_RiskDecision" />
+    <bpmn:sequenceFlow id="Flow_Risk_Persist" sourceRef="Task_RiskDecision" targetRef="Task_PersistDecision" />
+    <bpmn:sequenceFlow id="Flow_Persist_Gateway" sourceRef="Task_PersistDecision" targetRef="Gateway_RiskOutcome" />
+    <bpmn:sequenceFlow id="Flow_Risk_Approve" sourceRef="Gateway_RiskOutcome" targetRef="Task_CreateOffer">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=riskDecision.outcome = "AUTO_APPROVE"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Risk_Decline" sourceRef="Gateway_RiskOutcome" targetRef="Task_NotifyDeclined">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=riskDecision.outcome = "DECLINE"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Risk_Review" sourceRef="Gateway_RiskOutcome" targetRef="Task_ManualReview" />
+    <bpmn:sequenceFlow id="Flow_Review_Timer" sourceRef="Boundary_ReviewSla" targetRef="Task_EscalateReview" />
+    <bpmn:sequenceFlow id="Flow_Escalate_End" sourceRef="Task_EscalateReview" targetRef="End_Escalation" />
+    <bpmn:sequenceFlow id="Flow_Review_Outcome" sourceRef="Task_ManualReview" targetRef="Gateway_ManualOutcome" />
+    <bpmn:sequenceFlow id="Flow_Manual_Approve" sourceRef="Gateway_ManualOutcome" targetRef="Task_CreateOffer">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=manualDecision = "APPROVE"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Manual_Decline" sourceRef="Gateway_ManualOutcome" targetRef="Task_NotifyDeclined" />
+    <bpmn:sequenceFlow id="Flow_Offer_Notify" sourceRef="Task_CreateOffer" targetRef="Task_NotifyApproved" />
+    <bpmn:sequenceFlow id="Flow_Approved_Merge" sourceRef="Task_NotifyApproved" targetRef="Gateway_CompletionMerge" />
+    <bpmn:sequenceFlow id="Flow_Declined_Merge" sourceRef="Task_NotifyDeclined" targetRef="Gateway_CompletionMerge" />
+    <bpmn:sequenceFlow id="Flow_Merge_Complete" sourceRef="Gateway_CompletionMerge" targetRef="Task_Complete" />
+    <bpmn:sequenceFlow id="Flow_Complete_End" sourceRef="Task_Complete" targetRef="End_Application" />
+  </bpmn:process>
+</bpmn:definitions>

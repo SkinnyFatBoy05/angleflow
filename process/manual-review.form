@@ -1,0 +1,29 @@
+{
+  "components": [
+    {
+      "label": "Assessment decision",
+      "type": "select",
+      "key": "manualDecision",
+      "values": [
+        { "label": "Approve", "value": "APPROVE" },
+        { "label": "Decline", "value": "DECLINE" }
+      ],
+      "validate": { "required": true }
+    },
+    {
+      "label": "Reason code",
+      "type": "textfield",
+      "key": "manualReasonCode",
+      "validate": { "required": true, "maxLength": 80 }
+    },
+    {
+      "text": "All records in AngleFlow are synthetic portfolio data.",
+      "type": "text"
+    }
+  ],
+  "type": "default",
+  "id": "manual-review",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.0",
+  "schemaVersion": 18
+}

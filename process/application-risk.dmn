@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             id="Definitions_ApplicationRisk"
+             name="Application risk"
+             namespace="https://github.com/skinnyfatboy/angleflow">
+  <decision id="application-risk" name="Application risk outcome">
+    <decisionTable id="DecisionTable_ApplicationRisk" hitPolicy="FIRST">
+      <input id="Input_Identity" label="Identity verified">
+        <inputExpression id="InputExpression_Identity" typeRef="boolean"><text>identityVerified</text></inputExpression>
+      </input>
+      <input id="Input_Credit" label="Credit band">
+        <inputExpression id="InputExpression_Credit" typeRef="string"><text>creditBand</text></inputExpression>
+      </input>
+      <input id="Input_Affordability" label="Affordability ratio">
+        <inputExpression id="InputExpression_Affordability" typeRef="number"><text>affordabilityRatio</text></inputExpression>
+      </input>
+      <input id="Input_Fraud" label="Fraud score">
+        <inputExpression id="InputExpression_Fraud" typeRef="number"><text>fraudScore</text></inputExpression>
+      </input>
+      <input id="Input_Asset" label="Asset confidence">
+        <inputExpression id="InputExpression_Asset" typeRef="number"><text>assetConfidence</text></inputExpression>
+      </input>
+      <output id="Output_Outcome" name="outcome" label="Outcome" typeRef="string" />
+      <output id="Output_Reason" name="reasonCode" label="Reason code" typeRef="string" />
+      <output id="Output_Priority" name="reviewPriority" label="Review priority" typeRef="string" />
+
+      <rule id="Rule_IdentityDecline">
+        <inputEntry id="IE_IdentityDecline_1"><text>false</text></inputEntry><inputEntry id="IE_IdentityDecline_2"><text>-</text></inputEntry><inputEntry id="IE_IdentityDecline_3"><text>-</text></inputEntry><inputEntry id="IE_IdentityDecline_4"><text>-</text></inputEntry><inputEntry id="IE_IdentityDecline_5"><text>-</text></inputEntry>
+        <outputEntry id="OE_IdentityDecline_1"><text>"DECLINE"</text></outputEntry><outputEntry id="OE_IdentityDecline_2"><text>"IDENTITY_FAILED"</text></outputEntry><outputEntry id="OE_IdentityDecline_3"><text>"NONE"</text></outputEntry>
+      </rule>
+      <rule id="Rule_FraudDecline">
+        <inputEntry id="IE_FraudDecline_1"><text>-</text></inputEntry><inputEntry id="IE_FraudDecline_2"><text>-</text></inputEntry><inputEntry id="IE_FraudDecline_3"><text>-</text></inputEntry><inputEntry id="IE_FraudDecline_4"><text>&gt;= 70</text></inputEntry><inputEntry id="IE_FraudDecline_5"><text>-</text></inputEntry>
+        <outputEntry id="OE_FraudDecline_1"><text>"DECLINE"</text></outputEntry><outputEntry id="OE_FraudDecline_2"><text>"FRAUD_RISK"</text></outputEntry><outputEntry id="OE_FraudDecline_3"><text>"NONE"</text></outputEntry>
+      </rule>
+      <rule id="Rule_CreditDecline">
+        <inputEntry id="IE_CreditDecline_1"><text>-</text></inputEntry><inputEntry id="IE_CreditDecline_2"><text>"POOR"</text></inputEntry><inputEntry id="IE_CreditDecline_3"><text>-</text></inputEntry><inputEntry id="IE_CreditDecline_4"><text>-</text></inputEntry><inputEntry id="IE_CreditDecline_5"><text>-</text></inputEntry>
+        <outputEntry id="OE_CreditDecline_1"><text>"DECLINE"</text></outputEntry><outputEntry id="OE_CreditDecline_2"><text>"CREDIT_RISK"</text></outputEntry><outputEntry id="OE_CreditDecline_3"><text>"NONE"</text></outputEntry>
+      </rule>
+      <rule id="Rule_AffordabilityDecline">
+        <inputEntry id="IE_AffordabilityDecline_1"><text>-</text></inputEntry><inputEntry id="IE_AffordabilityDecline_2"><text>-</text></inputEntry><inputEntry id="IE_AffordabilityDecline_3"><text>&gt; 0.45</text></inputEntry><inputEntry id="IE_AffordabilityDecline_4"><text>-</text></inputEntry><inputEntry id="IE_AffordabilityDecline_5"><text>-</text></inputEntry>
+        <outputEntry id="OE_AffordabilityDecline_1"><text>"DECLINE"</text></outputEntry><outputEntry id="OE_AffordabilityDecline_2"><text>"AFFORDABILITY"</text></outputEntry><outputEntry id="OE_AffordabilityDecline_3"><text>"NONE"</text></outputEntry>
+      </rule>
+      <rule id="Rule_FairCreditReview">
+        <inputEntry id="IE_FairCreditReview_1"><text>-</text></inputEntry><inputEntry id="IE_FairCreditReview_2"><text>"FAIR"</text></inputEntry><inputEntry id="IE_FairCreditReview_3"><text>-</text></inputEntry><inputEntry id="IE_FairCreditReview_4"><text>-</text></inputEntry><inputEntry id="IE_FairCreditReview_5"><text>-</text></inputEntry>
+        <outputEntry id="OE_FairCreditReview_1"><text>"MANUAL_REVIEW"</text></outputEntry><outputEntry id="OE_FairCreditReview_2"><text>"POLICY_REVIEW"</text></outputEntry><outputEntry id="OE_FairCreditReview_3"><text>"STANDARD"</text></outputEntry>
+      </rule>
+      <rule id="Rule_AffordabilityReview">
+        <inputEntry id="IE_AffordabilityReview_1"><text>-</text></inputEntry><inputEntry id="IE_AffordabilityReview_2"><text>-</text></inputEntry><inputEntry id="IE_AffordabilityReview_3"><text>[0.35..0.45]</text></inputEntry><inputEntry id="IE_AffordabilityReview_4"><text>-</text></inputEntry><inputEntry id="IE_AffordabilityReview_5"><text>-</text></inputEntry>
+        <outputEntry id="OE_AffordabilityReview_1"><text>"MANUAL_REVIEW"</text></outputEntry><outputEntry id="OE_AffordabilityReview_2"><text>"POLICY_REVIEW"</text></outputEntry><outputEntry id="OE_AffordabilityReview_3"><text>"STANDARD"</text></outputEntry>
+      </rule>
+      <rule id="Rule_FraudReview">
+        <inputEntry id="IE_FraudReview_1"><text>-</text></inputEntry><inputEntry id="IE_FraudReview_2"><text>-</text></inputEntry><inputEntry id="IE_FraudReview_3"><text>-</text></inputEntry><inputEntry id="IE_FraudReview_4"><text>[30..69]</text></inputEntry><inputEntry id="IE_FraudReview_5"><text>-</text></inputEntry>
+        <outputEntry id="OE_FraudReview_1"><text>"MANUAL_REVIEW"</text></outputEntry><outputEntry id="OE_FraudReview_2"><text>"POLICY_REVIEW"</text></outputEntry><outputEntry id="OE_FraudReview_3"><text>"HIGH"</text></outputEntry>
+      </rule>
+      <rule id="Rule_AssetReview">
+        <inputEntry id="IE_AssetReview_1"><text>-</text></inputEntry><inputEntry id="IE_AssetReview_2"><text>-</text></inputEntry><inputEntry id="IE_AssetReview_3"><text>-</text></inputEntry><inputEntry id="IE_AssetReview_4"><text>-</text></inputEntry><inputEntry id="IE_AssetReview_5"><text>&lt; 0.75</text></inputEntry>
+        <outputEntry id="OE_AssetReview_1"><text>"MANUAL_REVIEW"</text></outputEntry><outputEntry id="OE_AssetReview_2"><text>"POLICY_REVIEW"</text></outputEntry><outputEntry id="OE_AssetReview_3"><text>"HIGH"</text></outputEntry>
+      </rule>
+      <rule id="Rule_AutoApprove">
+        <inputEntry id="IE_AutoApprove_1"><text>-</text></inputEntry><inputEntry id="IE_AutoApprove_2"><text>-</text></inputEntry><inputEntry id="IE_AutoApprove_3"><text>-</text></inputEntry><inputEntry id="IE_AutoApprove_4"><text>-</text></inputEntry><inputEntry id="IE_AutoApprove_5"><text>-</text></inputEntry>
+        <outputEntry id="OE_AutoApprove_1"><text>"AUTO_APPROVE"</text></outputEntry><outputEntry id="OE_AutoApprove_2"><text>"LOW_RISK"</text></outputEntry><outputEntry id="OE_AutoApprove_3"><text>"NONE"</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>
