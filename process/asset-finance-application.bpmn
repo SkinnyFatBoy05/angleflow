@@ -27,6 +27,10 @@
         <zeebe:ioMapping>
           <zeebe:input source="=applicationId" target="applicationId" />
           <zeebe:input source="=scenario" target="scenario" />
+          <zeebe:input source="=annualIncome" target="annualIncome" />
+          <zeebe:input source="=monthlyExpenses" target="monthlyExpenses" />
+          <zeebe:input source="=assetValue" target="assetValue" />
+          <zeebe:input source="=requestedAmount" target="requestedAmount" />
           <zeebe:output source="=identityVerified" target="identityVerified" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
@@ -38,6 +42,10 @@
         <zeebe:ioMapping>
           <zeebe:input source="=applicationId" target="applicationId" />
           <zeebe:input source="=scenario" target="scenario" />
+          <zeebe:input source="=annualIncome" target="annualIncome" />
+          <zeebe:input source="=monthlyExpenses" target="monthlyExpenses" />
+          <zeebe:input source="=assetValue" target="assetValue" />
+          <zeebe:input source="=requestedAmount" target="requestedAmount" />
           <zeebe:output source="=creditBand" target="creditBand" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
@@ -49,6 +57,10 @@
         <zeebe:ioMapping>
           <zeebe:input source="=applicationId" target="applicationId" />
           <zeebe:input source="=scenario" target="scenario" />
+          <zeebe:input source="=annualIncome" target="annualIncome" />
+          <zeebe:input source="=monthlyExpenses" target="monthlyExpenses" />
+          <zeebe:input source="=assetValue" target="assetValue" />
+          <zeebe:input source="=requestedAmount" target="requestedAmount" />
           <zeebe:output source="=affordabilityRatio" target="affordabilityRatio" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
@@ -60,6 +72,10 @@
         <zeebe:ioMapping>
           <zeebe:input source="=applicationId" target="applicationId" />
           <zeebe:input source="=scenario" target="scenario" />
+          <zeebe:input source="=annualIncome" target="annualIncome" />
+          <zeebe:input source="=monthlyExpenses" target="monthlyExpenses" />
+          <zeebe:input source="=assetValue" target="assetValue" />
+          <zeebe:input source="=requestedAmount" target="requestedAmount" />
           <zeebe:output source="=fraudScore" target="fraudScore" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
@@ -71,6 +87,10 @@
         <zeebe:ioMapping>
           <zeebe:input source="=applicationId" target="applicationId" />
           <zeebe:input source="=scenario" target="scenario" />
+          <zeebe:input source="=annualIncome" target="annualIncome" />
+          <zeebe:input source="=monthlyExpenses" target="monthlyExpenses" />
+          <zeebe:input source="=assetValue" target="assetValue" />
+          <zeebe:input source="=requestedAmount" target="requestedAmount" />
           <zeebe:output source="=assetConfidence" target="assetConfidence" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>

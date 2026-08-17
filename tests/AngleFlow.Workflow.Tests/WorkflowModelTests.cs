@@ -54,6 +54,32 @@ public sealed class WorkflowModelTests
     }
 
     [Fact]
+    public void Every_check_receives_the_application_values_used_by_workers()
+    {
+        var process = XDocument.Load(ProcessPath("asset-finance-application.bpmn"))
+            .Descendants(Bpmn + "process")
+            .Single();
+        var requiredInputs = new[]
+        {
+            "applicationId", "scenario", "annualIncome", "monthlyExpenses",
+            "assetValue", "requestedAmount"
+        };
+
+        foreach (var taskId in new[] { "Task_Identity", "Task_Credit", "Task_Affordability", "Task_Fraud", "Task_Asset" })
+        {
+            var task = process.Descendants(Bpmn + "serviceTask")
+                .Single(item => (string?)item.Attribute("id") == taskId);
+            var targets = task.Descendants(Zeebe + "input")
+                .Select(item => (string?)item.Attribute("target"))
+                .Where(item => item is not null)
+                .Cast<string>()
+                .ToHashSet(StringComparer.Ordinal);
+
+            Assert.All(requiredInputs, input => Assert.Contains(input, targets));
+        }
+    }
+
+    [Fact]
     public void Bpmn_has_manual_review_timer_and_interrupting_withdrawal_message()
     {
         var document = XDocument.Load(ProcessPath("asset-finance-application.bpmn"));
