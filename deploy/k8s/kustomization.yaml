@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - application.yaml
+images:
+  - name: angleflow-api
+    newName: angleflow.azurecr.io/angleflow-api
+    newTag: latest
+  - name: angleflow-worker
+    newName: angleflow.azurecr.io/angleflow-worker
+    newTag: latest
+  - name: angleflow-web
+    newName: angleflow.azurecr.io/angleflow-web
+    newTag: latest

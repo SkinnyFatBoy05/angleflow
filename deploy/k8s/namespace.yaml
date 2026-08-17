@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: angleflow
+  labels:
+    app.kubernetes.io/part-of: angleflow
+    pod-security.kubernetes.io/enforce: restricted
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: angleflow-config
+  namespace: angleflow
+data:
+  ASPNETCORE_ENVIRONMENT: Production
+  CAMUNDA_REST_ADDRESS: http://camunda-zeebe-gateway.orchestration.svc.cluster.local:8080
+  CAMUNDA_AUTH_STRATEGY: BASIC
+  CAMUNDA_SDK_LOG_LEVEL: info
+  CAMUNDA_WORKER_TIMEOUT: "30000"
