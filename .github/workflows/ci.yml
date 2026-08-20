@@ -50,6 +50,6 @@ jobs:
       - name: Render Kubernetes manifests
         run: kubectl kustomize deploy/k8s > /tmp/angleflow-k8s.yaml
       - name: Compile Bicep
-        uses: azure/cli@v2
+        uses: azure/cli@v3
         with:
           inlineScript: az bicep build --file infra/azure/main.bicep --outfile /tmp/angleflow-arm.json
