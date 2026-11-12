@@ -11,7 +11,7 @@ COPY src/ src/
 COPY process/ process/
 RUN dotnet publish src/AngleFlow.Worker/AngleFlow.Worker.csproj -c Release --no-restore -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine AS runtime
+FROM mcr.microsoft.com/dotnet/runtime:11.0-alpine AS runtime
 WORKDIR /app
 RUN addgroup -S angleflow && adduser -S angleflow -G angleflow
 COPY --from=build --chown=angleflow:angleflow /app/publish ./
